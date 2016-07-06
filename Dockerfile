@@ -14,6 +14,7 @@ RUN yum -y install php56w-common php56w-process php56w-cli php56w-xml php56w php
 RUN yum -y --enablerepo=ol7_optional_latest install owncloud
 
 USER apache
+RUN php /var/www/html/owncloud/occ maintenance:install --admin-user=admin --admin-pass=password
 RUN php /var/www/html/owncloud/occ app:enable user_ldap
 
 EXPOSE 80 443
