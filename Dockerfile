@@ -18,6 +18,6 @@ RUN php /var/www/html/owncloud/occ maintenance:install --admin-user=admin --admi
 RUN php /var/www/html/owncloud/occ app:enable user_ldap
 
 EXPOSE 80 443
-
+USER root
 CMD ["/usr/sbin/apachectl","-k","start","-DFOREGROUND"]
 
