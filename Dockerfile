@@ -12,17 +12,33 @@ RUN yum -y update \
 	&& yum -y --enablerepo=ol7_optional_latest install owncloud
 
 USER apache
+#Nei comandi ldap:set-config il primo parametro e' il nome della configurazione che nel caso specifico ha nome vuoto 
 RUN php /var/www/html/owncloud/occ maintenance:install --admin-user=admin --admin-pass=password \
 			&& php /var/www/html/owncloud/occ app:enable user_ldap \
 			&& php /var/www/html/owncloud/occ ldap:create-empty-config \ 
-			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapAgentName 'CN=Condiviso,OU=Help Desk,OU=Direzione Servizi  Informativi,OU=Direzione Generale,OU=Organigramma,DC=ior,DC=local' \
-			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapAgentPassword 'Condiviso' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapAgentName 'CN=Condiviso,OU=Help Desk,OU=Direzione Servizi Informativi,OU=Direzione Generale,OU=Organigramma,DC=ior,DC=local' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapAgentPassword 'condiviso' \
 			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapBase 'DC=ior,DC=local' \
-			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapHost 'dcmbb.ior.local' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapBaseGroups 'DC=ior,DC=local' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapBaseUsers 'DC=ior,DC=local' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapHost 'dcmb.ior.local' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapPort '389' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapUserFilter '(&(|(objectclass=person)))' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapLoginFilter '(&(&(|(objectclass=person)))(|(samaccountname=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))(|(cn=%uid))))' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapUserFilterObjectclass 'person' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapUserFilterMode '1' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapLoginFilterAttributes 'cn' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' hasMemberOfFilterSupport '1' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapLoginFilterEmail '1' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapEmailAttribute 'mail' \
+			&& php /var/www/html/owncloud/occ ldap:set-config '' ldapConfigurationActive '1' \
 			&& php /var/www/html/owncloud/occ ldap:show-config
-
 
 EXPOSE 80 443
 USER root
+RUN yum install iputils
+
 CMD ["/usr/sbin/apachectl","-k","start","-DFOREGROUND"]
+#USER apache
+#RUN php /var/www/html/owncloud/occ ldap:test-config ''
 
