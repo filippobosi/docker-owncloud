@@ -1,0 +1,1 @@
+docker run --add-host "dcmbb.ior.local dcmbb":172.18.1.4 --add-host "dcmb.ior.local dcmb":172.18.1.2 -p 80:80 -ti
